@@ -89,10 +89,11 @@ class SchedWakeupEvent(Event):
 
 def parse_sched_wakeup(columns):
     proc = parse_proc_name(columns)
-    if '=' in columns[2]:
-        cpu = int(columns[2].split('=')[1])
+    # depending on kernel version
+    if '=' in columns[1]:
+        cpu = int(columns[1].split('=')[1])
     else:
-        cpu = int(columns[2].split(':')[1])
+        cpu = int(columns[1].split(':')[1])
     return SchedWakeupEvent(proc, cpu)
 
 class SchedSwitchEvent(Event):
@@ -165,10 +166,10 @@ class Trace:
 #    -e sched:sched_switch
 def get_traces(lines):
     i = iter(lines)
-    line = i.next()
+    line = i.__next__()
     while True:
         if line.startswith('#') or line.startswith('\n'):
-            line = i.next()
+            line = i.__next__()
             continue
         columns = line.split()
         name_and_pid = []
@@ -193,11 +194,11 @@ def get_traces(lines):
             event = parse_sched_switch(columns)
 
         # Parse stacktrace
-        line = i.next()
+        line = i.__next__()
         stack = []
         while line.startswith('\t'):
             stack.append(line.strip('\t\n ').split()[1])
-            line = i.next()
+            line = i.__next__()
 
         if event:
             yield Trace(time, curr, cpu, event, stack)
@@ -252,6 +253,8 @@ def get_sched_timeline(lines, generate_runnable=False):
                 elif 'D' in proc_state:
                     state = TimelineElement.SLEEPING_UNINTERRUPTIBLY
                 elif proc_state == 'S':
+                    state = TimelineElement.SLEEPING
+                elif proc_state == 'T':
                     state = TimelineElement.SLEEPING
                 else:
                     raise RuntimeError("Unknown state: " + proc_state)

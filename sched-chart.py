@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 import sys
 import argparse
 import matplotlib.pyplot as plt
@@ -28,7 +28,7 @@ palette = {
     events.TimelineElement.WOKEN: 'red',
 }
 
-rgb_palette = dict((k, ColorConverter().to_rgb(c)) for k, c in palette.iteritems())
+rgb_palette = dict((k, ColorConverter().to_rgb(c)) for k, c in palette.items())
 
 class ProcHistory:
     def __init__(self, y):
@@ -76,7 +76,7 @@ for elem in events.get_sched_timeline(lines):
     hist.bars.append((elem.start, elem.duration))
     hist.colors.append(color)
 
-for proc, hist in history_by_proc.iteritems():
+for proc, hist in history_by_proc.items():
     ax.broken_barh(hist.bars, (hist.y, rows.height - 1), facecolors=hist.colors, edgecolor='face')
 
 if x_range:
@@ -95,10 +95,10 @@ ax.annotate('on-cpu', (61, 25),
 
 patches = []
 labels = []
-for state, color in palette.iteritems():
+for state, color in palette.items():
     label = str(state).lower()
     patches.append(mpatches.Patch(color=color, label=label))
     labels.append(label)
-plt.legend(patches, labels, 'upper right')
+plt.legend(patches, labels, loc='upper right')
 
 plt.show()

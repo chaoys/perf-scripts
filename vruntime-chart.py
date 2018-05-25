@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 import sys
 import matplotlib as mpl
 import matplotlib.pyplot as plt
@@ -10,18 +10,16 @@ import matplotlib.cm as cmx
 import matplotlib.colors as colors
 
 #x_range = (1029553.184, 1029553.190)
-#x_range = (1322034.361148993, 1322034.3851439261)
 x_range = None
 
 fig, ax = plt.subplots()
 
 segments_by_proc = defaultdict(list)
-min_x = None
-min_y = None
+min_x = 0
+min_y = 0
+
 for proc, x1, y1, x2, y2 in events.get_vruntime_history(events.get_traces(sys.stdin)):
-    if not proc.startswith('a.out'):
-        continue
-    print(proc, x1, y1, x2, y2)
+    #print(proc, x1, y1, x2, y2)
     if x_range:
         if x2 > x_range[0] and x1 < x_range[1]:
             if not min_x:
@@ -72,10 +70,10 @@ ax.annotate('vruntime', (61, 25),
 
 patches = []
 labels = []
-for proc, c in colors_by_proc.iteritems():
+for proc, c in colors_by_proc.items():
     label = proc
     patches.append(mpatches.Patch(color=c, label=label))
     labels.append(label)
-plt.legend(patches, labels, 'upper right')
+plt.legend(patches, labels, loc='upper right')
 
 plt.show()
